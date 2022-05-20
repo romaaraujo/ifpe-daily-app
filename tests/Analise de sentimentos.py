@@ -15,6 +15,12 @@ from sklearn import svm
 from sklearn import metrics
 from sklearn.model_selection import cross_val_predict
 
+import nltk
+nltk.download('stopwords')
+nltk.download('rslp')
+nltk.download('punkt')
+nltk.download('wordnet')
+
 df = pd.read_csv('/content/drive/MyDrive/Colab Notebooks//Tweets_Mg.csv', encoding='utf-8')
 
 df.head()
@@ -30,33 +36,47 @@ posts
 classes = df['Classificacao']
 classes
 
-import nltk
-nltk.download('stopwords')
-nltk.download('rslp')
-nltk.download('punkt')
-nltk.download('wordnet')
+"""Remove pontuação gráfica"""
+
+def RemoveStopWords(instancia):
+    stopwords = set(nltk.corpus.stopwords.words('portuguese'))
+    palavras = [i for i in instancia.split() if not i in stopwords]
+    return (" ".join(palavras))
+
+"""Remove link, ;, -, ("""
+
+def Limpeza_dados(instancia):
+    instancia = re.sub(r"http\S+", "", instancia).lower().replace('.','').replace(';','').replace('-','').replace(':','').replace(')','')
+    return (instancia)
+
+from nltk.stem import WordNetLemmatizer
+wordnet_lemmatizer = WordNetLemmatizer()
+
+def Lemmatization(instancia):
+  palavras = []
+  for w in instancia.split():
+    palavras.append(wordnet_lemmatizer.lemmatize(w))
+  return (" ".join(palavras))
+
+def Preprocessing(instancia):
+    instancia = re.sub(r"http\S+", "", instancia).lower().replace('.','').replace(';','').replace('-','').replace(':','').replace(')','')
+    stopwords = set(nltk.corpus.stopwords.words('portuguese'))
 
 
-Reviews_Rappi['content'] = Reviews_Rappi.apply(lambda row: nltk.word_tokenize(row['content']), axis=1) # Tokenização dos dados
+# Aplica a função em todos os dados:
+post = [Preprocessing(i) for i in post]
 
-stopwords = stopwords.words(language)
-stopwords = list(set(stopwords))
+from nltk.tokenize import word_tokenize
+from nltk.tokenize import TweetTokenizer
 
-def remove_stopwords(words):
-    """Remover as Stopwords das palavras tokenizadas"""
-    new_words = []
-    for word in words:
-        if word not in stopwords:
-            new_words.append(word)
-    return new_words
+tweet_tokenizer = TweetTokenizer()
 
-def to_lowercase(words):
-    """converter todos os caracteres para lowercase"""
-    new_words = []
-    for word in words:
-        new_word = word.lower()
-        new_words.append(new_word)
-    return new_words
+vectorizer = CountVectorizer(analyzer="word", tokenizer=tweet_tokenizer.tokenize)
+
+freq_post = vectorizer.fit_transform(post)
+type(freq_post)
+
+
 
 
 

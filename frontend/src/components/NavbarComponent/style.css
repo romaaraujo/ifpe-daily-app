@@ -1,0 +1,6 @@
+.navbar {
+    background-color: rgb(1, 101, 151);
+    border-bottom: 1px solid white;
+    box-shadow: rgb(0, 0, 0);
+    box-sizing: content-box;
+}

@@ -1,15 +1,10 @@
-import React from "react";
-import Main from "./Componentes/Main.jsx";
-import CompanyRegister from './Componentes/CompanyRegister.jsx'
+import { React, Component, useEffect } from 'react';
+import AppRoutes from './AppRoutes';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './config/config';
 
 const App = () => {
-
-  return (
-    <div>
-      <Main/>
-      {/* <CompanyRegister  /> */}
-    </div>
-  );
-};
+  return (<AppRoutes></AppRoutes>)
+}
 
 export default App;

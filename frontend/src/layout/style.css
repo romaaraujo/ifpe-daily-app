@@ -1,0 +1,8 @@
+html, body {
+    background-color: #477497 !important;
+}
+
+.card-header {
+    background-color: rgb(1, 101, 151) !important;
+    color:white;
+}

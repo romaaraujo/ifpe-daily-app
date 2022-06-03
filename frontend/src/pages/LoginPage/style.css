@@ -1,0 +1,19 @@
+.login-page .card .card-body {
+    border: 1px solid #477497 !important;
+    border-radius: 0 0px 20px 20px !important;
+}
+
+.login-page .form-label {
+    color: #86bde7 !important;
+}
+
+.login-page .btn {
+    background-color: #477497 !important;
+    border: 1px solid white !important;
+    width: 100% !important;
+    color: white !important;
+}
+
+.login-page .card {
+    border-radius: 10px;
+}

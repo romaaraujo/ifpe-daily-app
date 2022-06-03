@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ApiService from './../../services/ApiService'
 import { Card, Button, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const loggedUser = {
     username: 'romario',
@@ -14,6 +15,15 @@ const HomePage = () => {
     const [posts, setPost] = useState([]);
     const [postObj, setPostObj] = useState({});
     const [error, setError] = useState('');
+
+    const navigate = useNavigate();
+
+    const userLogged = () => {
+        if (!localStorage.getItem('token')) {
+            return false;
+        }
+        return true;
+    }
 
     const newPost = () => {
 
@@ -31,8 +41,8 @@ const HomePage = () => {
     }
 
     useEffect(() => {
-
-    }, [])
+        if (!userLogged()) navigate('/login');
+    }, [navigate])
 
     return (
         <div className="container mt-5">

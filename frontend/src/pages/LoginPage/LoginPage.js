@@ -11,11 +11,13 @@ const LoginPage = () => {
     document.title = `${global.config.appName} - Login`
 
     useEffect(() => {
+        localStorage.removeItem('token')
     }, [])
 
     const navigate = useNavigate();
     const Login = () => {
         if (user === 'admin' && password === 'admin') {
+            localStorage.setItem('token', 'temporario')
             navigate('/home')
         }
     }

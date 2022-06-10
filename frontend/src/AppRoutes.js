@@ -4,6 +4,7 @@ import Layout from "./layout/Layout";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import NoMatchPage from "./pages/NoMatchPage";
+import SingupPage from "./pages/SingupPage/SingupPage";
 import TestePage from "./pages/TestPage";
 
 const AppRoutes = () => {
@@ -15,6 +16,7 @@ const AppRoutes = () => {
     return (
         <Routes>
             <Route path="/login" element={<LoginPage />}></Route>
+            <Route path="/singup" element={<SingupPage />}></Route>
             <Route path="/sair" element={<Navigate to="/login" replace />}></Route>
 
             <Route path="/" element={<Layout />}>

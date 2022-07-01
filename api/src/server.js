@@ -18,6 +18,7 @@ server.use('/auth', apiRoutes);
 server.use('/post', postRouter);
 server.use('/relation', relationRouter);
 
-server.listen(process.env.PORT, () => {
-    console.log(`Server iniciado na porta ${process.env.PORT}`);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Server iniciado na porta ${PORT}`);
 });

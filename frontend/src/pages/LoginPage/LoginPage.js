@@ -64,7 +64,7 @@ const LoginPage = () => {
                                         </div>}
                                         <div className="form-outline mb-2">
                                             <input type="text" id="form2Example18" onChange={e => setUser(e.target.value)} className="form-control form-control-lg" />
-                                            <label className="form-label" htmlFor="form2Example18">Nome de Usuário</label>
+                                            <label className="form-label" htmlFor="form2Example18">E-mail</label>
                                         </div>
 
                                         <div className="form-outline mb-2">

@@ -3,10 +3,7 @@ import ApiService from './../../services/ApiService'
 import { Card, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
-const loggedUser = {
-    username: 'romario',
-    fullName: 'Romário Araújo'
-}
+
 
 const HomePage = () => {
 
@@ -15,6 +12,11 @@ const HomePage = () => {
     const [posts, setPost] = useState([]);
     const [postObj, setPostObj] = useState({});
     const [error, setError] = useState('');
+    const [followError, setFollowError] = useState('');
+    const [userFollow, setUserFollow] = useState('');
+    const [loggedUser, setLoggedUser] = useState({});
+    const [following, setFollowing] = useState([]);
+    const [follower, setFollower] = useState([]);
 
     const navigate = useNavigate();
 
@@ -25,18 +27,83 @@ const HomePage = () => {
         return true;
     }
 
-    const newPost = () => {
+    useEffect(() => {
+        ApiService.post('/auth/me', {
+            token: localStorage.getItem('token')
+        }).then((data) => {
+            setLoggedUser({ username: data.data.username })
+        }).catch((data) => {
+            localStorage.removeItem('token');
+        })
 
-        if (postObj.text && postObj.name) {
-            setPost(previous => [postObj, ...previous]);
-            setError('');
-            setPostObj({
-                text: '',
-                name: '',
-                datetime: ''
-            });
+        ApiService.post('/post/get', {
+            token: localStorage.getItem('token')
+        }).then((data) => {
+            if (Array.isArray(data.data)) {
+                data.data.forEach(post => {
+                    setPost(previous => [{ text: post.content, name: post.author.username, datetime: new Date(post.createdAt).toLocaleString('pt-br') }, ...previous]);
+                    setPostObj({
+                        text: '',
+                        name: '',
+                        datetime: ''
+                    });
+                })
+            }
+        }).catch((data) => {
+        })
+        ApiService.post('/relation/get', {
+            token: localStorage.getItem('token')
+        }).then((data) => {
+            if (Array.isArray(data.data[0])) {
+                setFollowing([]);
+                data.data[0].forEach(dados => {
+                    setFollowing(previous => [dados.following.username, ...previous]);
+                })
+            }
+            if (Array.isArray(data.data[1])) {
+                setFollower([]);
+                data.data[1].forEach(dados => {
+                    setFollower(previous => [dados.follower.username, ...previous]);
+                })
+            }
+        }).catch((data) => {
+        })
+    }, [])
+
+    const newPost = () => {
+        if (postObj.text) {
+            ApiService.post('/post/post', {
+                token: localStorage.getItem('token'),
+                content: postObj.text
+            }).then((data) => {
+                setPost(previous => [postObj, ...previous]);
+                setError('');
+                setPostObj({
+                    text: '',
+                    name: '',
+                    datetime: ''
+                });
+            }).catch((data) => {
+                if (data.response.data.error !== undefined) setError(data.response.data.error)
+            })
         } else {
-            setError('Digite uma mensagem para enviar');
+            setError('Digite um texto válido');
+        }
+    }
+
+    const follow = () => {
+        if (userFollow) {
+            setError('');
+            ApiService.post('/relation/new', {
+                token: localStorage.getItem('token'),
+                userFollow: userFollow
+            }).then((data) => {
+                window.location.reload(false);
+            }).catch((data) => {
+                if (data.response.data.error !== undefined) setFollowError(data.response.data.error)
+            })
+        } else {
+            setFollowError('Digite um usuário válido');
         }
     }
 
@@ -48,23 +115,54 @@ const HomePage = () => {
         <div className="container mt-5">
             <div className="row">
                 <div className="col-3">
-                    <Card>
-                        <Card.Header>Perfil</Card.Header>
-                        <Card.Body className="text-center">
-                            <div>
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/2300px-React-icon.svg.png" className="w-50 rounded-circle" />
-                            </div>
-                            <div className='mt-2'>
-                                <h5 className='display'>{loggedUser.fullName}</h5>
-                            </div>
-                        </Card.Body>
-                    </Card>
+                    <div className="row">
+                        <div className="col-12 mb-3">
+                            <Card>
+                                <Card.Header>Perfil</Card.Header>
+                                <Card.Body className="text-center">
+                                    <div>
+                                        <h6>Bem-vindo</h6>
+                                    </div>
+                                    <div className='mt-2'>
+                                        <h5 className='display'>{loggedUser.username}</h5>
+                                    </div>
+                                    <div className='mt-2 border'>
+                                        {follower.length} seguidor(es)
+                                    </div>
+                                    <div className='mt-2 border'>
+                                        Seguindo: {following.join(', ')}
+                                    </div>
+                                </Card.Body>
+                            </Card>
+                        </div>
+
+                    </div>
+                    <div className="row">
+                        <div className="col-12 mb-3">
+                            <Card>
+                                <Card.Header>Perfil</Card.Header>
+                                <Card.Body className="text-center">
+                                    {
+                                        followError && <Alert variant='danger' dismissible onClose={(() => setError(''))}>{followError}</Alert>
+                                    }
+                                    <div>
+                                        <h6>Seguir usuário</h6>
+                                    </div>
+                                    <div className='mt-2'>
+                                        <input className="input form-control w-full" placeholder="Digite o usuário" onChange={e => setUserFollow(e.target.value)} value={userFollow}></input><br />
+                                        <button className="btn btn-success text-white" onClick={follow}>Seguir</button>
+                                    </div>
+                                </Card.Body>
+                            </Card>
+                        </div>
+
+                    </div>
                 </div>
                 <div className="col-6">
                     {
                         error && <Alert variant='danger' dismissible onClose={(() => setError(''))}>{error}</Alert>
                     }
-                    <textarea placeholder='O que você está pensando?' value={postObj.text} onChange={e => setPostObj({ text: e.target.value, name: loggedUser.fullName, datetime: new Date().toLocaleString('pt-br') })} className='form-control input'></textarea>
+                    <textarea placeholder='O que você está pensando?' value={postObj.text} onChange={e => setPostObj({ text: e.target.value, name: loggedUser.username, datetime: new Date().toLocaleString('pt-br') })} className='form-control input'></textarea>
 
                     <div className='mt-2 w-full form-group '>
                         <Button className='float-right bg-light text-black' onClick={newPost}>Enviar</Button>
@@ -73,7 +171,7 @@ const HomePage = () => {
                     <div className='mt-2'>
                         {
                             posts.map((post, index) => (
-                                <Card key={index} className='mb-2'>
+                                <Card key={index} className='mb-3'>
                                     <Card.Header>{post.name} - {post.datetime}</Card.Header>
                                     <Card.Body>{post.text}</Card.Body>
                                 </Card>
@@ -86,11 +184,7 @@ const HomePage = () => {
                         <Card.Header>Trend's</Card.Header>
                         <Card.Body>
                             <ul>
-                                <li>Um</li>
-                                <li>Dois</li>
-                                <li>Três</li>
-                                <li>Quatro</li>
-                                <li>Cinco</li>
+                                <li>...</li>
                             </ul>
                         </Card.Body>
                     </Card>

@@ -8,7 +8,7 @@ const authRouter = express.Router();
 authRouter.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
-    if (!email || !password) return res.status(401).json({ error: 'Login ou senha inválidos' });
+    if (email == undefined || password == undefined) return res.status(401).json({ error: 'Login ou senha inválidos' });
 
     const user = await prisma.user.findUnique({
         where: {
@@ -18,13 +18,20 @@ authRouter.post('/login', async (req, res) => {
 
     if (!user) return res.status(401).json({ error: 'Login ou senha inválidos!' });
 
-    // const checkPassword = bcrypt.compareSync(password, user.password)
-    // if (!checkPassword) return res.status(401).json({ error: 'Login ou senha inválidos!' });
-
     if (password != user.password) return res.status(401).json({ error: 'Login ou senha inválidos!' });
-
     delete user.password;
-    const accessToken = '123';
+
+    const accessToken = bcrypt.hashSync(user.email + user.username, 10);
+
+    await prisma.user.update({
+        where: {
+            id: user.id
+        },
+        data: {
+            token: accessToken
+        }
+    })
+
     return res.json({ ...user, accessToken });
 })
 
@@ -54,6 +61,23 @@ authRouter.post('/singup', async (req, res) => {
     delete user.password
 
     return res.status(201).send(user);
+})
+
+authRouter.post('/me', async (req, res) => {
+    const { token } = req.body;
+    
+    if(token == undefined) return res.status(400).json({ error: 'Dados insuficientes' });
+
+    const user = await prisma.user.findFirst({
+        where: {
+            token: token
+        }
+    })
+
+    delete user.password;
+    delete user.token;
+
+    return res.json(user);
 })
 
 export default authRouter;

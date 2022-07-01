@@ -1,6 +1,7 @@
 .login-page .card .card-body {
-    border: 1px solid #477497 !important;
+    border: 1px solid #974747 !important;
     border-radius: 0 0px 20px 20px !important;
+    
 }
 
 .login-page .form-label {
@@ -12,8 +13,21 @@
     border: 1px solid white !important;
     width: 100% !important;
     color: white !important;
+    
 }
 
 .login-page .card {
     border-radius: 10px;
 }
+
+.center-bar
+{
+    width: 100vw;
+    height: 90vh;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+

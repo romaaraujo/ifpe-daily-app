@@ -50,11 +50,10 @@ const LoginPage = () => {
                     <div className="row">
                         <div className="col-sm-6 text-black">
 
-                            <div className="px-5 ms-xl-4 mt-3">
-                                <i className="fas fa-crow fa-2x me-3 pt-5 mt-xl-4"></i>
+                            <div className="px-5 ms-xl-4 mt-3" >
+                                <i className="fas fa-crow fa-2x me-3 pt-5 mt-xl-4" ></i>
                                 <span className="h1 fw-bold mb-0 text-white">Daily</span>
                             </div>
-
                             <div className="d-flex align-items-center h-custom-2 px-5 ms-xl-4 mt-5 pt-5 pt-xl-0 mt-xl-n5">
                                 <Card className='p-3'>
                                     <Card.Header><h3 >Log in</h3></Card.Header>
@@ -80,11 +79,10 @@ const LoginPage = () => {
                                 </Card>
 
                             </div>
+                            </div>
 
                         </div>
-                        <div className="col-sm-6 px-0 d-none d-sm-block">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img3.webp" className="w-100 vh-100" />
-                        </div>
+                       
                     </div>
                 </div>
             </section>

@@ -79,11 +79,12 @@ const LoginPage = () => {
                                 </Card>
 
                             </div>
-                            </div>
-
                         </div>
-                       
+                        <div className="col-sm-6 px-0 d-none d-sm-block">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img3.webp" className="w-100 vh-100" />
+                        </div>
                     </div>
+
                 </div>
             </section>
         </>

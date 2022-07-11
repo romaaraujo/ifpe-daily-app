@@ -36,21 +36,8 @@ const HomePage = () => {
             localStorage.removeItem('token');
         })
 
-        ApiService.post('/post/get', {
-            token: localStorage.getItem('token')
-        }).then((data) => {
-            if (Array.isArray(data.data)) {
-                data.data.forEach(post => {
-                    setPost(previous => [{ text: post.content, name: post.author.username, datetime: new Date(post.createdAt).toLocaleString('pt-br') }, ...previous]);
-                    setPostObj({
-                        text: '',
-                        name: '',
-                        datetime: ''
-                    });
-                })
-            }
-        }).catch((data) => {
-        })
+        getPost()
+
         ApiService.post('/relation/get', {
             token: localStorage.getItem('token')
         }).then((data) => {
@@ -70,18 +57,38 @@ const HomePage = () => {
         })
     }, [])
 
+    const getPost = () => {
+        ApiService.post('/post/get', {
+            token: localStorage.getItem('token')
+        }).then((data) => {
+            if (Array.isArray(data.data)) {
+                data.data.forEach(post => {
+                    setPost(previous => [{ text: post.content, name: post.author.username, sentiment: post.score + ' - ' + post.label, datetime: new Date(post.createdAt).toLocaleString('pt-br') }, ...previous]);
+                    setPostObj({
+                        text: '',
+                        name: '',
+                        datetime: '',
+                        sentiment: ''
+                    });
+                })
+            }
+        }).catch((data) => {
+        })
+    }
+
     const newPost = () => {
         if (postObj.text) {
             ApiService.post('/post/post', {
                 token: localStorage.getItem('token'),
                 content: postObj.text
             }).then((data) => {
-                setPost(previous => [postObj, ...previous]);
+                getPost()
                 setError('');
                 setPostObj({
                     text: '',
                     name: '',
-                    datetime: ''
+                    datetime: '',
+                    sentiment: ''
                 });
             }).catch((data) => {
                 if (data.response.data.error !== undefined) setError(data.response.data.error)
@@ -172,8 +179,9 @@ const HomePage = () => {
                         {
                             posts.map((post, index) => (
                                 <Card key={index} className='mb-3'>
-                                    <Card.Header>{post.name} - {post.datetime}</Card.Header>
+                                    <Card.Header>{post.name}</Card.Header>
                                     <Card.Body>{post.text}</Card.Body>
+                                    <Card.Footer>{post.datetime} <strong>({post.sentiment})</strong></Card.Footer>
                                 </Card>
                             ))
                         }

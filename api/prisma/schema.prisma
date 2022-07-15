@@ -15,6 +15,7 @@ model User {
   posts     Post[]
   followedBy Follows[] @relation("following")
   following  Follows[] @relation("follower")
+  likes     Like[]
 }
 
 model Post {
@@ -26,6 +27,7 @@ model Post {
   label     String    @default("")
   author    User?    @relation(fields: [authorId], references: [id])
   authorId  Int?
+  likes     Like[]
 }
 
 model Follows {
@@ -35,6 +37,15 @@ model Follows {
   followingId Int
 
   @@id([followerId, followingId])
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  unlike    Boolean  @default(false)
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  Int?
+  post      Post?    @relation(fields: [postId], references: [id])
+  postId  Int?
 }
 
 datasource db {

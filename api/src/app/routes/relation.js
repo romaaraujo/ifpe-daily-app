@@ -89,4 +89,33 @@ relationRouter.post('/new', async (req, res) => {
     return res.json({});
 })
 
+relationRouter.post('/search', async (req, res) => {
+    const { token, username } = req.body;
+
+    if (token, username == undefined) return res.status(400).json({ error: 'Dados insuficientes' });
+    
+    const user = await prisma.user.findFirst({
+        where: {
+            token: token
+        },
+        include: {
+            following: true
+        }
+    })
+
+    const users = await prisma.user.findMany({
+        where: {
+            username: {
+                startsWith: username
+            },
+            id: { not: user.id }
+        },
+        select: {
+            username: true
+        }
+    })
+
+    return res.json(users);
+})
+
 export default relationRouter;

@@ -71,15 +71,69 @@ postRouter.post('/get', async (req, res) => {
             authorId: { in: usersRelation }
         },
         select: {
+            id: true,
             content: true,
             createdAt: true,
             author: true,
             score: true,
-            label: true
+            label: true,
+            likes: true
         }
     });
-
+    
     return res.json(post);
 })
+
+postRouter.post('/trend', async (req, res) => {
+    const { token } = req.body;
+
+    if (token == undefined) return res.status(400).json({ error: 'Dados insuficientes' });
+
+    const day = new Date().toISOString();
+    const post = await prisma.post.findMany({
+        where: {
+            content: {
+                contains: '#',
+            }
+        }   
+    });
+
+    let hashtags = [];
+    
+    post.forEach(p => {
+        let tempHashtags = [];
+        
+        const hashtag = p.content.match(/(^|\s)(#[a-z\d-]+)/ig);
+        hashtag.forEach(h => {
+            if(!tempHashtags.includes(h)) {
+                tempHashtags.push(h);
+            }
+        })
+        
+        tempHashtags.forEach(h => {
+            hashtags.push(h.trim());
+        })
+    })
+
+    let count = {};
+    hashtags.forEach(function(i) { count[i] = (count[i]||0) + 1;});
+    
+    const sorted = Object.keys(count).sort(function(a,b){return count[a]-count[b]})
+
+    return res.json(sorted);
+})
+
+const sortObject = obj => {
+    const sorter = (a, b) => {
+       return obj[a] - obj[b];
+    };
+    const keys = Object.keys(obj);
+    keys.sort(sorter);
+    const res = {};
+    keys.forEach(key => {
+       res[key] = obj[key];
+    });
+    return res;
+ };
 
 export default postRouter;

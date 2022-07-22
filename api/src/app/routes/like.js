@@ -24,11 +24,10 @@ likeRouter.post('/', async (req, res) => {
     const like = await prisma.like.findFirst({
         where: {
             authorId: user.id,
-            postId: postId,
-            unlike: false
+            postId: postId
         }
     })
-    
+
     if (!like) {
         await prisma.like.create({
             data: {
@@ -43,6 +42,14 @@ likeRouter.post('/', async (req, res) => {
                 id: like.id
             }
         })
+        if (like.unlike) {
+            await prisma.like.create({
+                data: {
+                    authorId: user.id,
+                    postId: postId
+                }
+            })
+        }
     }
 
     return res.json({});
@@ -65,8 +72,7 @@ likeRouter.post('/unlike', async (req, res) => {
     const like = await prisma.like.findFirst({
         where: {
             authorId: user.id,
-            postId: postId,
-            unlike: true
+            postId: postId
         }
     })
 
@@ -84,6 +90,16 @@ likeRouter.post('/unlike', async (req, res) => {
                 id: like.id
             }
         })
+
+        if (!like.unlike) {
+            await prisma.like.create({
+                data: {
+                    authorId: user.id,
+                    postId: postId,
+                    unlike: true
+                }
+            })
+        }
     }
 
     return res.json({});

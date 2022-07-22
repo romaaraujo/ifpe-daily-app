@@ -78,7 +78,15 @@ postRouter.post('/get', async (req, res) => {
             score: true,
             label: true,
             likes: true
-        }
+        },
+        orderBy: [
+            {
+                createdAt: 'asc'
+            },
+            {
+                score: 'desc'
+            }
+        ]
     });
     
     return res.json(post);

@@ -99,6 +99,7 @@ const HomePage = () => {
                     datetime: '',
                     sentiment: ''
                 });
+                trends();
             }).catch((data) => {
                 if (data.response.data.error !== undefined) setError(data.response.data.error)
             })
@@ -156,6 +157,7 @@ const HomePage = () => {
             token: localStorage.getItem('token'),
             postId: postId
         }).then((data) => {
+            setTrendsV([]);
             let arrayt = Object.entries(data.data).reverse();
             setTrendsV(arrayt)
         }).catch((data) => {
